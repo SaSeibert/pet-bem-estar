@@ -9,6 +9,9 @@ import br.edu.ifrs.petbemestar.dominio.Porte;
 import br.edu.ifrs.petbemestar.dominio.StatusAtendimento;
 import br.edu.ifrs.petbemestar.dominio.Servico;
 import br.edu.ifrs.petbemestar.dominio.Tutor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
 public class Principal {
 
@@ -18,42 +21,39 @@ public class Principal {
 
         Pet mimi = new Pet("Mimi", Especie.GATO, Porte.PEQUENO);
         Pet thor = new Pet("Thor", Especie.CACHORRO, Porte.GRANDE);
-        Pet frajola = new Pet("Frajola", Especie.GATO, Porte.PEQUENO);
-        Pet nina = new Pet("Nina", Especie.GATO, Porte.PEQUENO);
 
         rosa.adicionarPet(mimi);
         rosa.adicionarPet(thor);
-        rosa.adicionarPet(frajola);
-        rosa.adicionarPet(nina);
 
         Atendimento banhoDaMimi = new Atendimento(LocalDateTime.of(2026, 8, 12, 9, 0), Servico.BANHO);
-        Atendimento banhoDoThor = new Atendimento(LocalDateTime.of(2026, 8, 12, 9, 0), Servico.BANHO);
-        Atendimento tosaDaFrajola = new Atendimento(LocalDateTime.of(2026, 8, 12, 14, 0), Servico.TOSA);
-        Atendimento consultaDaNina = new Atendimento(LocalDateTime.of(2026, 8, 13, 10, 0), Servico.CONSULTA);
+        Atendimento banhoDoThor = new Atendimento(LocalDateTime.of(2026, 8, 12, 9, 0), Servico.BANHO_E_TOSA);
 
         mimi.adicionarAtendimento(banhoDaMimi);
         thor.adicionarAtendimento(banhoDoThor);
-        frajola.adicionarAtendimento(tosaDaFrajola);
-        nina.adicionarAtendimento(consultaDaNina);
 
         banhoDaMimi.setSituacao(StatusAtendimento.REALIZADO);
-        tosaDaFrajola.setSituacao(StatusAtendimento.REALIZADO);
-        consultaDaNina.setSituacao(StatusAtendimento.NAO_COMPARECEU);
 
         System.out.println("Tutora: " + rosa);
-        System.out.println("Telefone (um so, em um lugar so): " + rosa.getTelefone());
-        System.out.println("Pets: " + rosa.getPets().size() + " -> " + rosa.getPets());
-        System.out.println();
+        System.out.println("Pets: " + rosa.getPets());
 
-        for (Pet pet : rosa.getPets()) {
-            System.out.println(pet + " | " + pet.getAtendimentos());
-        }
-        System.out.println();
+        // CREATE DATABASE IF NOT EXISTS pet_bem_estar;
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("pet-bem-estar-pu");
+        EntityManager em = emf.createEntityManager();
 
-        for (Pet pet : rosa.getPets()) {
-            Atendimento ultimo = pet.ultimoAtendimentoRealizado();
-            System.out.println("Ultima vez que " + pet.getNome() + " veio: "
-                    + (ultimo == null ? "nunca veio" : ultimo.getDataHora().toString()));
-        }
+        em.getTransaction().begin();
+        em.persist(rosa);
+        em.persist(mimi);
+        em.persist(thor);
+        em.persist(banhoDaMimi);
+        em.persist(banhoDoThor);
+        em.getTransaction().commit();
+
+        System.out.println("\nPersistido com sucesso! Confiram no MySQL:");
+        System.out.println("  SELECT * FROM Tutor;");
+        System.out.println("  SELECT * FROM Pet;");
+        System.out.println("  SELECT * FROM Atendimento;");
+
+        em.close();
+        emf.close();
     }
 }

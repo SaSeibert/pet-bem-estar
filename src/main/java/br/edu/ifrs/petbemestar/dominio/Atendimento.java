@@ -2,18 +2,31 @@ package br.edu.ifrs.petbemestar.dominio;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Atendimento {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime dataHora;
+
+    @Enumerated(EnumType.STRING)
     private Servico tipo;
+
+    @Enumerated(EnumType.STRING)
     private StatusAtendimento situacao;
-    private Double valor;  //a ser visto futuramente
+
+    private Double valor;
+
+    @ManyToOne
     private Pet pet;
 
     public Atendimento() {

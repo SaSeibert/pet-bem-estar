@@ -3,17 +3,32 @@ package br.edu.ifrs.petbemestar.dominio;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Pet {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
+
+    @Enumerated(EnumType.STRING)
     private Especie especie;
+
+    @Enumerated(EnumType.STRING)
     private Porte porte;
+
+    @ManyToOne
     private Tutor tutor;
+
+    @OneToMany(mappedBy = "pet")
     private List<Atendimento> atendimentos = new ArrayList<>();
 
     public Pet() {
@@ -56,5 +71,4 @@ public class Pet {
     public String toString() {
         return nome + " (" + especie + ")";
     }
-
 }
